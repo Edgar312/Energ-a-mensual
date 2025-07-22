@@ -1,0 +1,101 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Consumo Eléctrico en Casa</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-title">
+      <h1>⚡ Consumo Eléctrico en Casa</h1>
+      <span class="subtitulo">Calcula tu gasto energético mensual</span>
+    </div>
+    <div class="nav-options">
+      <label for="pais">País:</label> 
+      <select id="pais">
+        <option value="mx">México</option>
+        <option value="ar">Argentina</option>
+        <option value="cl">Chile</option>
+        <option value="co">Colombia</option>
+        <option value="pe">Perú</option>
+      </select>
+      <button id="modo-oscuro-toggle">🌙 Modo Oscuro</button>
+    </div>
+  </nav>
+
+  <main>
+    <section id="formulario">
+      <h2>Agregar Aparato</h2>
+      <form id="form-aparato">
+        <input type="text" id="nombre" placeholder="Ej. Refrigerador" required>
+        <input type="number" id="potencia" placeholder="Potencia (W)" required>
+        <input type="number" id="horas" placeholder="Horas de uso hoy" required>
+        <button type="submit">Registrar</button>
+      </form>
+    </section>
+
+    <section id="registros">
+      <h2>Registro Diario</h2>
+      <table id="tabla-registros">
+        <thead>
+          <tr>
+            <th>Aparato</th>
+            <th>Potencia (W)</th>
+            <th>Horas</th>
+            <th>Fecha</th>
+            <th>Consumo (kWh)</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <button id="borrar-todo">Borrar todos los registros</button>
+    </section>
+
+    <section id="resumen">
+      <h2>Resumen</h2>
+      <p id="resumen-consumo">Total kWh: 0 | Costo aprox.: $0.00</p>
+      <p id="resumen-dia-mes">Costo por día: $0.00 | Estimado mensual: $0.00</p>
+    </section>
+
+    <section>
+      <h2>Gráfica de Consumo Diario</h2>
+      <div class="grafica-container">
+        <canvas id="grafica-consumo"></canvas>
+      </div>
+    
+    <section id="historial">
+      <h2>Historial Mensual</h2>
+      <button id="guardar-mes">📦 Guardar mes actual</button>
+      <select id="selector-historial">
+        <option value="">-- Ver historial guardado --</option>
+      </select>
+      <button id="borrar-historial">🗑 Eliminar mes seleccionado</button>
+      <table id="tabla-historial" style="margin-top:1rem; display:none;">
+        <thead>
+          <tr>
+            <th>Aparato</th>
+            <th>Potencia (W)</th>
+            <th>Horas</th>
+            <th>Fecha</th>
+            <th>Consumo (kWh)</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+    
+      <section id="tip">
+  <h3>¿Sabías que...?</h3>
+  <p id="tip-texto">Puedes ahorrar hasta un 15% si desconectas aparatos en stand-by.</p>
+</section>
+
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
