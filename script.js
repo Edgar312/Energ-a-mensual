@@ -96,6 +96,8 @@ function mostrarRegistros() {
   resumenTexto.textContent = `Total kWh: ${totalKWh.toFixed(2)} | Costo aprox.: $${costo}`;
   resumenDiaMes.textContent = `Costo por día: $${costoDia} | Estimado mensual: $${costoMes}`;
   actualizarGrafica();
+  actualizarGraficaPorAparato();
+
 }
 
 function actualizarGrafica() {
@@ -171,7 +173,7 @@ mostrarRegistros();
 mostrarTip();
 
 
-// === HISTORIAL MENSUAL ===
+// === mensual ===
 
 const btnGuardarMes = document.getElementById("guardar-mes");
 const selectorHistorial = document.getElementById("selector-historial");
@@ -263,3 +265,50 @@ selectorHistorial.addEventListener("change", () => {
 btnBorrarHistorial.addEventListener("click", borrarHistorial);
 
 actualizarSelectorHistorial();
+
+function actualizarGraficaPorAparato() {
+  const consumoPorAparato = {};
+
+  registros.forEach(reg => {
+    const consumo = (reg.watts * reg.horas) / 1000;
+    consumoPorAparato[reg.nombre] = (consumoPorAparato[reg.nombre] || 0) + consumo;
+  });
+
+  const aparatos = Object.keys(consumoPorAparato);
+  const valores = Object.values(consumoPorAparato);
+
+  const ctxAparato = document.getElementById('grafica-aparato').getContext('2d');
+
+  if (window.graficaAparato) window.graficaAparato.destroy();
+
+  window.graficaAparato = new Chart(ctxAparato, {
+    type: 'pie',
+    data: {
+      labels: aparatos,
+      datasets: [{
+        data: valores,
+        backgroundColor: [
+          '#0077ff', '#00c853', '#ff8f00', '#d50000',
+          '#6a1b9a', '#0097a7', '#c51162', '#33691e'
+        ],
+        borderColor: '#fff',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: 'right'
+        },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              return `${context.label}: ${context.parsed.toFixed(2)} kWh`;
+            }
+          }
+        }
+      }
+    }
+  });
+}
