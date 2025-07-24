@@ -5,6 +5,14 @@ const resumenDiaMes = document.getElementById("resumen-dia-mes");
 const borrarBtn = document.getElementById("borrar-todo");
 const tipTexto = document.getElementById("tip-texto");
 const selectPais = document.getElementById("pais");
+const formMeta = document.getElementById("form-meta");
+const inputMeta = document.getElementById("input-meta");
+const estadoMeta = document.getElementById("estado-meta");
+
+let META_KWH = parseFloat(localStorage.getItem("meta_kwh")) || null;
+if (META_KWH) {
+  inputMeta.value = META_KWH;
+}
 
 const tarifasPorPais = {
   mx: 1.7,
@@ -43,7 +51,19 @@ form.addEventListener("submit", e => {
   mostrarRegistros();
   form.reset();
   mostrarTip();
+
+  mostrarAlerta();
 });
+
+function mostrarAlerta() {
+  const alerta = document.getElementById("alerta-registro");
+  alerta.style.display = "block";
+  alerta.classList.remove("fadeout");
+
+  setTimeout(() => {
+    alerta.style.display = "none";
+  }, 2000);
+}
 
 borrarBtn.addEventListener("click", () => {
   if (confirm("¿Seguro que deseas borrar todos los registros?")) {
@@ -66,27 +86,43 @@ function mostrarTip() {
   const random = Math.floor(Math.random() * tips.length);
   tipTexto.textContent = tips[random];
 }
+setInterval(() => {
+  mostrarTip();
+}, 15000); 
 
 function mostrarRegistros() {
-  tablaBody.innerHTML = "";
-  let totalKWh = 0;
-  const fechasUnicas = new Set();
+ tablaBody.innerHTML = "";
+let totalKWh = 0;
+const fechasUnicas = new Set();
 
-  registros.forEach(reg => {
-    const tr = document.createElement("tr");
-    const consumo = (reg.watts * reg.horas / 1000).toFixed(2);
-    totalKWh += parseFloat(consumo);
-    fechasUnicas.add(reg.fecha);
+registros.forEach((reg, index) => {
+  const tr = document.createElement("tr");
+  const consumo = (reg.watts * reg.horas / 1000).toFixed(2);
+  totalKWh += parseFloat(consumo);
+  fechasUnicas.add(reg.fecha);
 
-    tr.innerHTML = `
-      <td>${reg.nombre}</td>
-      <td>${reg.watts}</td>
-      <td>${reg.horas}</td>
-      <td>${reg.fecha}</td>
-      <td>${consumo}</td>
-    `;
-    tablaBody.appendChild(tr);
+document.querySelectorAll(".btn-eliminar").forEach(btn => {
+  btn.addEventListener("click", e => {
+    const i = e.target.dataset.index;
+    registros.splice(i, 1);
+    guardarRegistros();
+    mostrarRegistros();
+    mostrarResumenSemanal();
   });
+});
+
+
+  tr.innerHTML = `
+    <td>${reg.nombre}</td>
+    <td>${reg.watts}</td>
+    <td>${reg.horas}</td>
+    <td>${reg.fecha}</td>
+    <td>${consumo}</td>
+    <td><button class="btn-eliminar" data-index="${index}">🗑️</button></td>
+  `;
+  tablaBody.appendChild(tr);
+});
+
 
   const costo = (totalKWh * TARIFA_KWH).toFixed(2);
   const dias = fechasUnicas.size || 1;
@@ -97,6 +133,19 @@ function mostrarRegistros() {
   resumenDiaMes.textContent = `Costo por día: $${costoDia} | Estimado mensual: $${costoMes}`;
   actualizarGrafica();
   actualizarGraficaPorAparato();
+  mostrarTopAparatos();
+  if (META_KWH !== null) {
+  if (totalKWh > META_KWH) {
+    estadoMeta.textContent = `⚠️ Has superado tu meta mensual de ${META_KWH} kWh. Total: ${totalKWh.toFixed(2)} kWh`;
+    estadoMeta.style.color = "#d50000";
+  } else {
+    estadoMeta.textContent = `✅ Vas bien: ${totalKWh.toFixed(2)} / ${META_KWH} kWh`;
+    estadoMeta.style.color = "#00c853";
+  }
+} else {
+  estadoMeta.textContent = "Aún no has definido una meta.";
+  estadoMeta.style.color = "";
+}
 
 }
 
@@ -173,7 +222,7 @@ mostrarRegistros();
 mostrarTip();
 
 
-// === mensual ===
+
 
 const btnGuardarMes = document.getElementById("guardar-mes");
 const selectorHistorial = document.getElementById("selector-historial");
@@ -312,3 +361,114 @@ function actualizarGraficaPorAparato() {
     }
   });
 }
+document.querySelectorAll(".nav-tab").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".nav-tab").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+
+    const seccion = document.getElementById(btn.dataset.seccion);
+    if (seccion) {
+      seccion.scrollIntoView({ behavior: "smooth" });
+    }
+  });
+});
+const btnArriba = document.getElementById("btn-arriba");
+
+window.addEventListener("scroll", () => {
+  if (window.scrollY > 300) {
+    btnArriba.style.display = "block";
+  } else {
+    btnArriba.style.display = "none";
+  }
+});
+
+btnArriba.addEventListener("click", () => {
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+});
+
+const exportarBtn = document.getElementById("exportar-csv");
+exportarBtn.addEventListener("click", exportarCSV);
+
+function exportarCSV() {
+  if (registros.length === 0) {
+    alert("No hay registros para exportar.");
+    return;
+  }
+
+  let csv = "Aparato,Potencia (W),Horas,Fecha,Consumo (kWh)\n";
+  registros.forEach(reg => {
+    const consumo = (reg.watts * reg.horas / 1000).toFixed(2);
+    csv += `${reg.nombre},${reg.watts},${reg.horas},${reg.fecha},${consumo}\n`;
+  });
+
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const link = document.createElement("a");
+  const url = URL.createObjectURL(blob);
+  link.setAttribute("href", url);
+  link.setAttribute("download", "consumo_diario.csv");
+  link.style.visibility = "hidden";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+function mostrarTopAparatos() {
+  const consumoTotal = {};
+
+  registros.forEach(reg => {
+    const consumo = (reg.watts * reg.horas) / 1000;
+    consumoTotal[reg.nombre] = (consumoTotal[reg.nombre] || 0) + consumo;
+  });
+
+  const top3 = Object.entries(consumoTotal)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3);
+
+  const listaTop = document.getElementById("lista-top");
+  listaTop.innerHTML = "";
+
+  if (top3.length === 0) {
+    listaTop.innerHTML = "<li>No hay registros aún.</li>";
+    return;
+  }
+
+  top3.forEach(([nombre, consumo], index) => {
+    const li = document.createElement("li");
+    li.textContent = `${index + 1}. ${nombre} – ${consumo.toFixed(2)} kWh`;
+    listaTop.appendChild(li);
+  });
+}
+function mostrarResumenSemanal() {
+  const contenido = document.getElementById("contenido-semanal");
+  const consumoPorFecha = {};
+
+  registros.forEach(reg => {
+    const [dia, mes, anio] = reg.fecha.split("/");
+    const fecha = new Date(`${anio}-${mes}-${dia}`);
+    const clave = fecha.toISOString().split("T")[0]; // formato YYYY-MM-DD
+    const consumo = (reg.watts * reg.horas) / 1000;
+    consumoPorFecha[clave] = (consumoPorFecha[clave] || 0) + consumo;
+  });
+
+  const fechas = Object.keys(consumoPorFecha).sort();
+  if (fechas.length < 7) {
+    contenido.textContent = "Aún no hay suficientes datos para generar el resumen semanal.";
+    return;
+  }
+
+  const ultimas7 = fechas.slice(-7);
+  const total = ultimas7.reduce((sum, fecha) => sum + consumoPorFecha[fecha], 0);
+
+  contenido.textContent = `En los últimos 7 días consumiste un total de ${total.toFixed(2)} kWh.`;
+}
+formMeta.addEventListener("submit", e => {
+  e.preventDefault();
+  const valor = parseFloat(inputMeta.value);
+  if (!isNaN(valor) && valor > 0) {
+    META_KWH = valor;
+    localStorage.setItem("meta_kwh", valor);
+    mostrarRegistros();
+  }
+});

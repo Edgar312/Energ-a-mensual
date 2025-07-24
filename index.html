@@ -26,6 +26,13 @@
       <button id="modo-oscuro-toggle">🌙 Modo Oscuro</button>
     </div>
   </nav>
+<nav class="menu-navegacion">
+  <button class="nav-tab active" data-seccion="formulario">Inicio</button>
+  <button class="nav-tab" data-seccion="registros">Registros</button>
+  <button class="nav-tab" data-seccion="resumen">Resumen</button>
+  <button class="nav-tab" data-seccion="grafica">Gráficas</button>
+  <button class="nav-tab" data-seccion="historial">Historial</button>
+</nav>
 
   <main>
     <section id="formulario" class="tarjeta">
@@ -52,6 +59,7 @@
         </thead>
         <tbody></tbody>
       </table>
+      <button id="exportar-csv">📤 Exportar a CSV</button>
       <button id="borrar-todo">Borrar todos los registros</button>
     </section>
 
@@ -60,8 +68,28 @@
       <p id="resumen-consumo">Total kWh: 0 | Costo aprox.: $0.00</p>
       <p id="resumen-dia-mes">Costo por día: $0.00 | Estimado mensual: $0.00</p>
     </section>
+<section id="meta" class="tarjeta">
+  <h2>🎯 Meta Mensual</h2>
+  <form id="form-meta">
+    <input type="number" id="input-meta" placeholder="Ej. 250 kWh" min="1" required>
+    <button type="submit">Guardar Meta</button>
+  </form>
+  <p id="estado-meta"></p>
+</section>
 
-    <section class="tarjeta">
+    <section id="resumen-semanal" class="tarjeta">
+  <h2>📅 Resumen Semanal</h2>
+  <p id="contenido-semanal">Aún no hay suficientes datos para generar el resumen.</p>
+</section>
+
+<section id="top-aparatos" class="tarjeta">
+  <h2>🔝 Top 3 Aparatos más Gastadores</h2>
+  <ol id="lista-top">
+    <li>Cargando...</li>
+  </ol>
+</section>
+
+    <section id="grafica" class="tarjeta">
       <h2>Gráfica de Consumo Diario</h2>
       <div class="grafica-container">
         <canvas id="grafica-consumo"></canvas>
@@ -82,6 +110,7 @@
             <th>Horas</th>
             <th>Fecha</th>
             <th>Consumo (kWh)</th>
+            <th></th>
           </tr>
         </thead>
         <tbody></tbody>
@@ -101,6 +130,8 @@
 
     </section>
   </main>
+<button id="btn-arriba" title="Volver arriba">⬆️</button>
+<div id="alerta-registro">✅ Aparato registrado</div>
 
   <script src="script.js"></script>
 </body>
