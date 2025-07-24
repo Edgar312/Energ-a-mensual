@@ -226,12 +226,25 @@ body.dark-mode .tarjeta {
   top: 0;
   z-index: 100;
   display: flex;
-  justify-content: center;
+  overflow-x: auto;
+  white-space: nowrap;
   gap: 1rem;
-  background-color: #ffffff;
+  background-color: var(--bg-color, #ffffff);
   padding: 0.8rem 1rem;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  scrollbar-width: none; 
 }
+
+.menu-navegacion::-webkit-scrollbar {
+  display: none;
+}
+
+
+.nav-tab {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+}
+
 
 .nav-tab {
   border: none;
