@@ -394,3 +394,13 @@ body.dark-mode #top-aparatos li {
 body.dark-mode #estado-meta {
   color: #ffb74d;
 }
+
+.tabla-scroll {
+  overflow-x: auto;
+  width: 100%;
+}
+
+.tabla-scroll table {
+  min-width: 600px;
+  border-collapse: collapse;
+}

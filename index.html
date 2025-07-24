@@ -53,22 +53,25 @@
     </section>
 
     <section id="registros" class="tarjeta">
-      <h2>Registro Diario</h2>
-      <table id="tabla-registros">
-        <thead>
-          <tr>
-            <th>Aparato</th>
-            <th>Potencia (W)</th>
-            <th>Horas</th>
-            <th>Fecha</th>
-            <th>Consumo (kWh)</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-      <button id="exportar-csv">📤 Exportar a CSV</button>
-      <button id="borrar-todo">Borrar todos los registros</button>
-    </section>
+  <h2>Registro Diario</h2>
+  <div class="tabla-scroll">
+    <table id="tabla-registros">
+      <thead>
+        <tr>
+          <th>Aparato</th>
+          <th>Potencia (W)</th>
+          <th>Horas</th>
+          <th>Fecha</th>
+          <th>Consumo (kWh)</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+  <button id="exportar-csv">📥 Exportar a CSV</button>
+  <button id="borrar-todo">🗑 Borrar todos los registros</button>
+</section>
+
 
     <section id="resumen" class="tarjeta">
       <h2>Resumen</h2>
