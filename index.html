@@ -6,143 +6,335 @@
   <title>Consumo Eléctrico en Casa</title>
   <link rel="stylesheet" href="styles.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
 </head>
 <body>
   <nav class="navbar">
-    <div class="nav-title">
-      <h1>⚡ Consumo Eléctrico en Casa</h1>
-      <span class="subtitulo">Calcula tu gasto energético mensual</span>
+    <div class="nav-left">
+      <div class="nav-logo">⚡</div>
+      <div class="nav-title">
+        <h1>Consumo Eléctrico</h1>
+        <span class="subtitulo">Control para casas e instituciones</span>
+      </div>
+      <button id="btn-logout">Cerrar sesión</button>
     </div>
-    <div class="nav-options">
-      <label for="pais">País:</label> 
-      <select id="pais">
-        <option value="mx">México</option>
-        <option value="ar">Argentina</option>
-        <option value="cl">Chile</option>
-        <option value="co">Colombia</option>
-        <option value="pe">Perú</option>
-      </select>
-      <button id="modo-oscuro-toggle">🌙 Modo Oscuro</button>
+
+    <div class="nav-right">
+      <div class="nav-group">
+        <label for="pais">País</label>
+        <select id="pais">
+          <option value="mx">México</option>
+          <option value="ar">Argentina</option>
+          <option value="cl">Chile</option>
+          <option value="co">Colombia</option>
+          <option value="pe">Perú</option>
+        </select>
+      </div>
+
+      <div class="nav-group">
+        <label for="plan">Plan</label>
+        <select id="plan">
+          <option value="personal">Personal</option>
+          <option value="pro">Pro</option>
+          <option value="empresa">Empresa</option>
+        </select>
+      </div>
+
+      <button id="modo-oscuro-toggle" class="icon-button" title="Cambiar tema">
+        🌙
+      </button>
     </div>
   </nav>
-<nav class="menu-navegacion">
-  <button class="nav-tab active" data-seccion="formulario">Inicio</button>
-  <button class="nav-tab" data-seccion="registros">Registros</button>
-  <button class="nav-tab" data-seccion="resumen">Resumen</button>
-  <button class="nav-tab" data-seccion="grafica">Gráficas</button>
-  <button class="nav-tab" data-seccion="historial">Historial</button>
-</nav>
-<section id="como-funciona" class="tarjeta">
-  <h2>¿Cómo funciona?</h2>
-  <p>
-    Esta aplicación te permite registrar el consumo eléctrico de tus aparatos domésticos. 
-    Ingresa su nombre, potencia y horas de uso diario. Automáticamente verás el gasto total, 
-    estimaciones mensuales, gráficos y podrás guardar tus registros.
+
+  <nav class="menu-navegacion">
+    <button class="nav-tab active" data-seccion="formulario">Inicio</button>
+    <button class="nav-tab" data-seccion="registros">Registros</button>
+    <button class="nav-tab" data-seccion="resumen">Resumen</button>
+    <button class="nav-tab" data-seccion="grafica">Gráficas</button>
+    <button class="nav-tab" data-seccion="historial">Historial</button>
+  </nav>
+
+  <header id="hero" class="hero">
+    <div class="hero-texto">
+      <h2>Monitorea tu consumo eléctrico como un profesional ⚙️</h2>
+      <p>
+        Registra aparatos por zonas, compara días y meses, controla metas de kWh y
+        adapta la capacidad según tu tipo de instalación: casa, escuela, negocio o empresa.
+      </p>
+    </div>
+    <div class="hero-panel">
+      <h3>Plan actual</h3>
+      <p id="plan-nombre">Personal</p>
+      <ul>
+        <li><strong>Zonas máximas:</strong> <span id="plan-zonas-max"></span></li>
+        <li><strong>Registros máximos:</strong> <span id="plan-registros-max"></span></li>
+        <li><strong>Zonas usadas:</strong> <span id="plan-zonas-uso"></span></li>
+        <li><strong>Registros usados:</strong> <span id="plan-registros-uso"></span></li>
+      </ul>
+
+      <div class="campo-institucion">
+        <label for="nombre-institucion">Institución / empresa</label>
+        <input type="text" id="nombre-institucion" placeholder="Ej. Colegio Juárez, Planta Mérida">
+      </div>
+
+      <p class="plan-hint">
+        Sube a <strong>Pro</strong> o <strong>Empresa</strong> para instituciones con más áreas y equipos.
+      </p>
+    </div>
+  </header>
+  <section id="planes" class="tarjeta tarjeta-planes">
+  <h2>Planes disponibles</h2>
+  <p class="planes-intro">
+    Comienza con el plan <strong>Personal</strong> para tu casa y escala a
+    <strong>Pro</strong> o <strong>Empresa</strong> si necesitas más zonas, equipos y reportes avanzados.
   </p>
+
+  <div class="planes-grid">
+    <!-- Plan Personal -->
+    <article class="plan-card plan-personal">
+      <h3>Personal</h3>
+      <p class="plan-tag">Ideal para casas y departamentos</p>
+      <p class="plan-price">$0 / mes</p>
+      <ul class="plan-lista">
+        <li>Hasta <strong>3 zonas</strong></li>
+        <li>Máx. <strong>3 aparatos por zona</strong></li>
+        <li>Hasta <strong>10 registros diarios</strong></li>
+        <li>Exportar a <strong>CSV</strong></li>
+        <li>Gráficas y meta mensual</li>
+        <li class="plan-limitado">❌ Historial mensual</li>
+        <li class="plan-limitado">❌ Reporte PDF</li>
+      </ul>
+      <button class="plan-cta" data-plan="personal">Usar plan Personal</button>
+    </article>
+
+    <!-- Plan Pro -->
+    <article class="plan-card plan-pro">
+      <div class="plan-chip">Más popular</div>
+      <h3>Pro</h3>
+      <p class="plan-tag">Escuelas, oficinas o negocios pequeños</p>
+      <p class="plan-price">$ — / mes</p>
+      <ul class="plan-lista">
+        <li>Hasta <strong>10 zonas</strong></li>
+        <li>Hasta <strong>20 aparatos por zona</strong></li>
+        <li>Hasta <strong>200 registros diarios</strong></li>
+        <li>Exportar a <strong>CSV</strong></li>
+        <li><strong>Historial mensual</strong> ilimitado</li>
+        <li><strong>Reporte PDF</strong> profesional</li>
+        <li>Resumen semanal y consumo por zona</li>
+      </ul>
+      <button class="plan-cta plan-cta-pro" data-plan="pro">Elegir Pro</button>
+    </article>
+
+    <!-- Plan Empresa -->
+    <article class="plan-card plan-empresa">
+      <h3>Empresa</h3>
+      <p class="plan-tag">Instituciones y empresas grandes</p>
+      <p class="plan-price">$ — / mes</p>
+      <ul class="plan-lista">
+        <li>Hasta <strong>50 zonas</strong></li>
+        <li>Hasta <strong>200 aparatos por zona</strong></li>
+        <li>Hasta <strong>10,000 registros diarios</strong></li>
+        <li><strong>Historial</strong> avanzado y PDF</li>
+        <li>Ideal para varias áreas y equipos</li>
+        <li>Listo para multiusuario y sucursales</li>
+      </ul>
+      <button class="plan-cta" data-plan="empresa">Elegir Empresa</button>
+    </article>
+  </div>
 </section>
 
   <main>
-    <section id="formulario" class="tarjeta">
-      <h2>Agregar Aparato</h2>
+    <!-- Overlay de autenticación -->
+    <div id="auth-container" class="auth hidden">
+      <div class="auth-box">
+        <h2>Bienvenido</h2>
+
+        <input type="email" id="auth-email" placeholder="Correo electrónico">
+        <input type="password" id="auth-password" placeholder="Contraseña">
+
+        <button id="btn-login">Iniciar sesión</button>
+        <button id="btn-register">Registrarse</button>
+
+        <p class="auth-switch">
+          <span id="toggle-auth-mode">¿No tienes cuenta? Registrarse</span>
+        </p>
+      </div>
+    </div>
+
+    <section id="como-funciona" class="tarjeta">
+      <h2>¿Cómo funciona?</h2>
+      <p>
+        Esta aplicación te permite registrar el consumo eléctrico de tus aparatos domésticos o institucionales.
+        Asigna cada aparato a una zona (habitación, laboratorio, oficina, etc.), y obtén:
+        <strong>resumen de consumo, costos, metas mensuales, top aparatos, gráficos y un historial mensual.</strong>
+      </p>
+    </section>
+
+    <section id="formulario" class="tarjeta tarjeta-form">
+      <div class="tarjeta-header">
+        <h2>Agregar Aparato</h2>
+        <span class="badge">Nuevo registro</span>
+      </div>
       <form id="form-aparato">
-        <input type="text" id="nombre" placeholder="Ej. Refrigerador" required>
-        <input type="number" id="potencia" placeholder="Potencia (W)" required>
-        <input type="number" id="horas" placeholder="Horas de uso hoy" required>
-        <button type="submit">Registrar</button>
+        <div class="campo-grupo">
+          <label for="nombre">Nombre del aparato</label>
+          <input type="text" id="nombre" placeholder="Ej. Refrigerador, A/C Laboratorio" required>
+        </div>
+
+        <div class="campo-grupo">
+          <label for="potencia">Potencia (W)</label>
+          <input type="number" id="potencia" placeholder="Ej. 800" min="1" required>
+        </div>
+
+        <div class="campo-grupo">
+          <label for="horas">Horas de uso hoy</label>
+          <input type="number" id="horas" placeholder="Ej. 5" min="0" step="0.1" required>
+        </div>
+
+        <div class="campo-grupo">
+          <label for="zona">Zona / Habitación</label>
+          <select id="zona">
+            <option value="Sala">Sala</option>
+            <option value="Cocina">Cocina</option>
+            <option value="Recámara 1">Recámara 1</option>
+            <option value="Recámara 2">Recámara 2</option>
+            <option value="Oficina">Oficina</option>
+            <option value="Laboratorio">Laboratorio</option>
+            <option value="Área común">Área común</option>
+            <option value="Otra">Otra (escribir)</option>
+          </select>
+        </div>
+
+        <div class="campo-grupo" id="zona-personalizada-grupo" style="display:none;">
+          <label for="zona-personalizada">Nombre de la zona</label>
+          <input type="text" id="zona-personalizada" placeholder="Ej. Taller, Bodega, Aula 3">
+        </div>
+
+        <button type="submit" class="btn-primario">Registrar aparato</button>
       </form>
     </section>
 
     <section id="registros" class="tarjeta">
-  <h2>Registro Diario</h2>
-  <div class="tabla-scroll">
-    <table id="tabla-registros">
-      <thead>
-        <tr>
-          <th>Aparato</th>
-          <th>Potencia (W)</th>
-          <th>Horas</th>
-          <th>Fecha</th>
-          <th>Consumo (kWh)</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
-  <button id="exportar-csv">📥 Exportar a CSV</button>
-  <button id="borrar-todo">🗑 Borrar todos los registros</button>
-</section>
-
-
-    <section id="resumen" class="tarjeta">
-      <h2>Resumen</h2>
-      <p id="resumen-consumo">Total kWh: 0 | Costo aprox.: $0.00</p>
-      <p id="resumen-dia-mes">Costo por día: $0.00 | Estimado mensual: $0.00</p>
+      <h2>Registro Diario</h2>
+      <div class="tabla-scroll">
+        <table id="tabla-registros">
+          <thead>
+            <tr>
+              <th>Aparato</th>
+              <th>Zona</th>
+              <th>Potencia (W)</th>
+              <th>Horas</th>
+              <th>Fecha</th>
+              <th>Consumo (kWh)</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="acciones-tabla">
+        <button id="exportar-csv">📥 Exportar a CSV</button>
+        <button id="borrar-todo">🗑 Borrar todos los registros</button>
+      </div>
     </section>
-<section id="meta" class="tarjeta">
-  <h2>🎯 Meta Mensual</h2>
-  <form id="form-meta">
-    <input type="number" id="input-meta" placeholder="Ej. 250 kWh" min="1" required>
-    <button type="submit">Guardar Meta</button>
-  </form>
-  <p id="estado-meta"></p>
-</section>
 
-    <section id="resumen-semanal" class="tarjeta">
-  <h2>📅 Resumen Semanal</h2>
-  <p id="contenido-semanal">Aún no hay suficientes datos para generar el resumen.</p>
-</section>
+    <section id="resumen" class="tarjeta tarjeta-grid">
+      <div class="tarjeta-resumen">
+        <h2>Resumen General</h2>
+        <p id="resumen-consumo">Total kWh: 0 | Costo aprox.: $0.00</p>
+        <p id="resumen-dia-mes">Costo por día: $0.00 | Estimado mensual: $0.00</p>
+      </div>
 
-<section id="top-aparatos" class="tarjeta">
-  <h2>🔝 Top 3 Aparatos más Gastadores</h2>
-  <ol id="lista-top">
-    <li>Cargando...</li>
-  </ol>
-</section>
+      <div id="meta" class="tarjeta-resumen">
+        <h2>🎯 Meta Mensual</h2>
+        <form id="form-meta">
+          <input type="number" id="input-meta" placeholder="Ej. 250 kWh" min="1" required>
+          <button type="submit">Guardar Meta</button>
+        </form>
+        <p id="estado-meta"></p>
+      </div>
+
+      <div id="resumen-semanal" class="tarjeta-resumen">
+        <h2>📅 Resumen Semanal</h2>
+        <p id="contenido-semanal">Aún no hay suficientes datos para generar el resumen.</p>
+      </div>
+
+      <div id="top-aparatos" class="tarjeta-resumen">
+        <h2>🔝 Top 3 Aparatos más Gastadores</h2>
+        <ol id="lista-top">
+          <li>No hay registros aún.</li>
+        </ol>
+      </div>
+
+      <div id="resumen-zonas" class="tarjeta-resumen">
+        <h2>📍 Consumo por zona</h2>
+        <div class="tabla-scroll">
+          <table id="tabla-zonas">
+            <thead>
+              <tr>
+                <th>Zona</th>
+                <th>kWh totales</th>
+                <th>% del total</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
 
     <section id="grafica" class="tarjeta">
-      <h2>Gráfica de Consumo Diario</h2>
-      <div class="grafica-container">
-        <canvas id="grafica-consumo"></canvas>
+      <h2>Gráficas de Consumo</h2>
+      <div class="grafica-layout">
+        <div class="grafica-container">
+          <h3>Consumo diario (kWh)</h3>
+          <canvas id="grafica-consumo"></canvas>
+        </div>
+        <div class="grafica-container">
+          <h3>Consumo por aparato</h3>
+          <canvas id="grafica-aparato"></canvas>
+        </div>
       </div>
-    
+    </section>
+
     <section id="historial" class="tarjeta">
       <h2>Historial Mensual</h2>
-      <button id="guardar-mes">📦 Guardar mes actual</button>
-      <select id="selector-historial">
-        <option value="">-- Ver historial guardado --</option>
-      </select>
-      <button id="borrar-historial">🗑 Eliminar mes seleccionado</button>
-      <table id="tabla-historial" style="margin-top:1rem; display:none;">
-        <thead>
-          <tr>
-            <th>Aparato</th>
-            <th>Potencia (W)</th>
-            <th>Horas</th>
-            <th>Fecha</th>
-            <th>Consumo (kWh)</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </section>
-    
-      <section id="tip" class="tarjeta">
-  <h3>¿Sabías que...?</h3>
-  <p id="tip-texto">Puedes ahorrar hasta un 15% si desconectas aparatos en stand-by.</p>
-</section>
-<section class="tarjeta">
-  <h2>Consumo por Aparato</h2>
-  <div class="grafica-container">
-    <canvas id="grafica-aparato"></canvas>
-  </div>
-</section>
+      <div class="acciones-tabla">
+        <button id="guardar-mes">📦 Guardar mes actual</button>
+        <select id="selector-historial">
+          <option value="">-- Ver historial guardado --</option>
+        </select>
+        <button id="borrar-historial">🗑 Eliminar mes seleccionado</button>
+        <button id="btn-reporte-pdf">📄 Descargar reporte PDF</button>
+      </div>
 
+      <div class="tabla-scroll">
+        <table id="tabla-historial" style="margin-top:1rem; display:none;">
+          <thead>
+            <tr>
+              <th>Aparato</th>
+              <th>Zona</th>
+              <th>Potencia (W)</th>
+              <th>Horas</th>
+              <th>Fecha</th>
+              <th>Consumo (kWh)</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="tip" class="tarjeta">
+      <h3>¿Sabías que...?</h3>
+      <p id="tip-texto">Puedes ahorrar hasta un 15% si desconectas aparatos en stand-by.</p>
     </section>
   </main>
-<button id="btn-arriba" title="Volver arriba">⬆️</button>
-<div id="alerta-registro">✅ Aparato registrado</div>
 
-  <script src="script.js"></script>
+  <button id="btn-arriba" title="Volver arriba">⬆️</button>
+  <div id="alerta-registro">✅ Aparato registrado</div>
+
+  <script type="module" src="script.js"></script>
 </body>
 </html>
